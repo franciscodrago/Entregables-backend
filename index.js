@@ -59,8 +59,6 @@ class ProductManager {
     };
 }
 
-// -----------------------------* Proceso de testing *----------------------------
-// Se creará una instancia de la clase “ProductManager”
 const producto = new ProductManager();
 
 producto.getProducts();
@@ -69,3 +67,4 @@ producto.getProducts();
  producto.addProduct('Producto prueba2', 'Este es un producto prueba', 200, 'Sin imagen', 'abc1234', 25);
  producto.addProduct('Producto prueba3', 'Este es un producto prueba', 200, 'Sin imagen', 'abc12345', 25);
  producto.addProduct('Producto prueba4', 'Este es un producto prueba', 200, 'Sin imagen', 'abc123456', 25);
+
