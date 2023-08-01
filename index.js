@@ -1,70 +1,124 @@
+const fs = require('fs');
+
 class ProductManager {
-    static nuevoId = 0;
+    // #accId = 0;
+    #path = "";
 
-    constructor() {
-        this.products = []
-
-
+    constructor(path) {
+        this.#path = path;
     }
 
-    addProduct(title, description, price, thumbnail, code, stock) {
-        // el cual agregará un producto al arreglo de productos inicial.
-        // Validar que no se repita el campo “code” y que todos los campos sean obligatorios
-        // Al agregarlo, debe crearse con un id autoincrementable
+    //OBTENGO LA LISTA DE PRODUCTOS
+    async getProducts() {
+        try {
+            const prod = await fs.promises.readFile(this.#path, "utf-8");
+            return JSON.parse(prod);
 
-        const productoExiste = this.products.find((producto) => producto.code === code)
+        } catch (e) {
+            return [];
 
-        if (productoExiste) {
-            console.log(`El producto ${productoExiste.title} existe, no debes ingresarlo`);
-            return
         }
 
+    }
+    //FILTRA Y OBTIENE EL PRODUCTO POR ID
+    async getProductById(prodId) {
+        const product = await this.getProducts();
+        let prod = product.find((p) => p.id === prodId);
+        if (prod) {
+            return prod;
+        } else {
+            throw new Error(`Product ID: ${prodId} Not Found`);
+        }
+    }
+    // AGREGA EL PRODUCTO 
+    async addProduct(title, description, price, thumbnail, code, stock) {
+        
+        const product = await this.getProducts();
+        
+        const newProduct = {
+            // id: this.#acc, 
+            id: product.length + 1,
+            title,
+            description,
+            price,
+            thumbnail,
+            code,
+            stock,
+        };
+        //CHECKEANDO SI FALTA INFORMACION
         if (!title || !description || !price || !thumbnail || !code || !stock) {
-            console.log(`Debes ingresar todos los campos para agregar un producto ${title}`)
+            throw new Error("missing information");
+        }
 
+        // CHECKEANDO QUE NO SE REPITA EL CODE       
+        const checkCode = product.some((p) => p.code === code);
+
+        if (checkCode) {
+            throw new Error("product code already exist");
         } else {
-
-            const producto = {
-                id: ++ProductManager.nuevoId,
-                title,
-                description,
-                price,
-                thumbnail,
-                code,
-                stock
-            };
-            this.products.push(producto);
-            console.log(`El producto ${producto.title} fue agregado correctamente`);
-
+           await fs.promises.writeFile(this.#path, JSON.stringify([...product, newProduct]));
+            // this.#accId++;
         }
 
     }
+    //ACTUALIZA EL PRODUCTO
+    async updateProduct(id, update) {
+        const product = await this.getProducts();
+        let productUpdated = product.find(prod => prod.id === id);
 
-    getProducts() {
-        // el cual debe devolver el arreglo con todos los productos creados hasta ese momento
-        return console.log(producto);
-    };
+        if (!productUpdated) {
+            throw new Error("Product ID not found");//CHECKEA QUE EXISTA EL ID
+        }
 
-    getProductById(id) {
+        if (Object.keys(update).includes('code')) {
+            let checkCode = product.some(i => i.code === update.code)
+            if (checkCode) {
+                throw new Error("Product code modification not allowed")//CHECKEA SI SE ENVIA UN CODIGO PARA MODIFICAR
+            }
+        }
 
-        const productoIdValidar = this.products.find((producto) => producto.id === id)
-        // el cual debe buscar en el arreglo el producto que coincida con el id
-        // En caso de no coincidir ningún id, mostrar en consola un error “Not found”
-        if (!productoIdValidar) {
-            console.log(`"Not found", el ID ${id} de producto no existe`);
+        productUpdated = { ...productUpdated, ...update };
+        let newArray = product.filter(prod => prod.id !== id);
+
+        newArray = [...newArray, productUpdated];
+
+        await fs.promises.writeFile(this.#path, JSON.stringify(newArray));
+
+        console.log('Updated Product');
+    }
+
+    //BORRA EL PRODUCTO POR ID   
+    async deleteProduct(prodId) {
+        const product = await this.getProducts();
+        let productId = product.find((p) => p.id === prodId);
+        if (!productId) {
+            throw new Error(` product id: ${prodId} not found`);
+
         } else {
-            console.log(`El producto con el ID ${id} fue encontrado.`);
-        } return productoIdValidar;
+            let eraser = product.filter((p) => p.id !== prodId);
+           await fs.promises.writeFile(this.#path, JSON.stringify(eraser));
 
-    };
+        }
+    }
+
 }
 
-const producto = new ProductManager();
 
-producto.getProducts();
 
- producto.addProduct('Producto prueba', 'Este es un producto prueba', 200, 'Sin imagen', 'abc123', 25);
- producto.addProduct('Producto prueba2', 'Este es un producto prueba', 200, 'Sin imagen', 'abc1234', 25);
- producto.addProduct('Producto prueba3', 'Este es un producto prueba', 200, 'Sin imagen', 'abc12345', 25);
- producto.addProduct('Producto prueba4', 'Este es un producto prueba', 200, 'Sin imagen', 'abc123456', 25);
 
+async function main() {
+
+
+
+    const manager = new ProductManager('./products.json');
+
+    // console.log(await manager.getProducts()); // []
+      await manager.addProduct("producto prueba", "Este es un producto prueba", 200, "sin imagen", "abc123456", 25);
+      await manager.addProduct("producto prueba", "Este es un producto prueba", 200, "sin imagen", "abc12345", 25);
+      await manager.addProduct("producto prueba", "Este es un producto prueba", 200, "sin imagen", "abc1234", 25);
+    //   await manager.deleteProduct(1);
+    //   console.log(await manager.getProducts()); // []
+    //   console.log(await manager.getProductById(0));
+    //   console.log(await manager.getProductById(5));
+}
+main();
