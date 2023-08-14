@@ -1,0 +1,58 @@
+[
+   {
+       "id": 1,
+       "title": "Remera Azul",
+       "description": "Descripcion de Remera Azul",
+       "price": 8000,
+       "thumbail": [],
+       "code": "code1",
+       "stock": 20,
+       "status": true,
+       "category": "Remeras"
+   },
+   {
+       "id": 2,
+       "title": "Pantalon Ocean",
+       "description": "Descripcion de Pantalon Ocean",
+       "price": 12000,
+       "thumbail": [],
+       "code": "code2",
+       "stock": 32,
+       "status": true,
+       "category": "Pantalones"
+   },
+   {
+       "id": 0,
+       "title": "Campera Militar",
+       "description": "Descripcion de Campera Militar",
+       "price": 22000,
+       "thumbail": [],
+       "code": "code5",
+       "stock": 20,
+       "status": true,
+       "category": "Camperas"
+   },
+   {
+       "id": 3,
+       "title": "Buzo Batic",
+       "description": "Descripcion de buzo Batic",
+       "price": 15000,
+       "thumbail": [],
+       "code": "code4",
+       "stock": 11,
+       "status": true,
+       "category": "Buzos"
+   },
+
+   {
+       "id": 3,
+       "title": "Bermuda Negra",
+       "description": "Descripcion de Bermuda Negra",
+       "price": 10000,
+       "thumbail": [],
+       "code": "code1123",
+       "stock": 11,
+       "status": true,
+       "category": "Buzos"
+   }
+]
